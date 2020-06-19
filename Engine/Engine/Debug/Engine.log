@@ -55,5 +55,4 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(608): w
   c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\winerror.h(55899): note: 'D3D10_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS'의 이전 정의를 참조하십시오.
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(609): warning C4005: 'D3D10_ERROR_FILE_NOT_FOUND': 매크로 재정의
   c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\winerror.h(55908): note: 'D3D10_ERROR_FILE_NOT_FOUND'의 이전 정의를 참조하십시오.
-c:\users\choiyj\desktop\dx11tut11\engine\engine\graphicsclass.cpp(429): warning C4244: '인수': 'int'에서 'FLOAT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  Engine.vcxproj -> C:\Users\ChoiYJ\Desktop\dx11tut11\Engine\Debug\Engine.exe
+  Engine.vcxproj -> C:\Users\ChoiYJ\Documents\GitHub\Comgraph_3DModelApp\Engine\Debug\Engine.exe

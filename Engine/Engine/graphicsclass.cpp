@@ -96,25 +96,25 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 		// Initialize the model object.
 		if(i == 0)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/sun.obj", L"../Engine/data/Sun.jpg");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Sun.obj", L"../Engine/data/Sun.jpg");
 		else if (i == 1)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/mercury.obj", L"../Engine/data/Mercury.jpg");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Mercury.obj", L"../Engine/data/Mercury.jpg");
 		else if (i == 2)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/moon.obj", L"../Engine/data/Moon.dds");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Moon.obj", L"../Engine/data/Moon.dds");
 		else if (i == 3)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/venus.obj", L"../Engine/data/VenusSurface.jpg");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Venus.obj", L"../Engine/data/VenusSurface.jpg");
 		else if (i == 4)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/earth.obj", L"../Engine/data/EarthDayMap.jpg");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Earth.obj", L"../Engine/data/EarthDayMap.jpg");
 		else if (i == 5)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/mars.obj", L"../Engine/data/Mars.jpg");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Mars.obj", L"../Engine/data/Mars.jpg");
 		else if (i == 6)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/jupiter.obj", L"../Engine/data/Jupiter.jpg");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Jupiter.obj", L"../Engine/data/Jupiter.jpg");
 		else if (i == 7)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/saturn.obj", L"../Engine/data/Saturn.jpg");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Saturn.obj", L"../Engine/data/Saturn.jpg");
 		else if (i == 8)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/uranus.obj", L"../Engine/data/Uranus.jpg");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Uranus.obj", L"../Engine/data/Uranus.jpg");
 		else if (i == 9)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/neptune.obj", L"../Engine/data/Neptune.jpg");
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Neptune.obj", L"../Engine/data/Neptune.jpg");
 
 		if (!result)
 		{
@@ -122,16 +122,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 			return false;
 		}
 	}
-	getPolygonCount("../Engine/data/moon.obj");
+	getPolygonCount("../Engine/data/Moon.obj");
 	getPolygonCount("../Engine/data/earth.obj");
-	getPolygonCount("../Engine/data/venus.obj");
-	getPolygonCount("../Engine/data/mars.obj");
-	getPolygonCount("../Engine/data/jupiter.obj");
-	getPolygonCount("../Engine/data/saturn.obj");
-	getPolygonCount("../Engine/data/uranus.obj");
-	getPolygonCount("../Engine/data/neptune.obj");
-	getPolygonCount("../Engine/data/sun.obj");
-	getPolygonCount("../Engine/data/mercury.obj");
+	getPolygonCount("../Engine/data/Venus.obj");
+	getPolygonCount("../Engine/data/Mars.obj");
+	getPolygonCount("../Engine/data/Jupiter.obj");
+	getPolygonCount("../Engine/data/Saturn.obj");
+	getPolygonCount("../Engine/data/Uranus.obj");
+	getPolygonCount("../Engine/data/Neptune.obj");
+	getPolygonCount("../Engine/data/Sun.obj");
+	getPolygonCount("../Engine/data/Mercury.obj");
 
 
 	// Create the light shader object.
@@ -334,7 +334,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, bool onoff_ambi, bo
 	static float rotation = 0.0f;
 
 	// Update the rotation variable each frame.
-	rotation += (float)D3DX_PI * 0.00015f;
+	rotation += (float)D3DX_PI * 0.000015f;
 	if (rotation > 360.0f)
 	{
 		rotation -= 360.0f;
@@ -374,7 +374,8 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, bool onoff_ambi, bo
 
 bool GraphicsClass::Render(float rotation)
 {
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, worldMatrix1;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+	D3DXMATRIX worldMatrix1, WM_sun, WM_moon, WM_planet;
 	bool result;
 	D3DXVECTOR3 cameraPosition;
 
@@ -389,51 +390,74 @@ bool GraphicsClass::Render(float rotation)
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
+
 	// Get the position of the camera.
 	cameraPosition = m_Camera->GetPosition();
 
 	// Translate the sky dome to be centered around the camera position.
-	D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+	{D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
-		// Turn off back face culling.
-		m_D3D->TurnOffCulling();
+	// Turn off back face culling.
+	m_D3D->TurnOffCulling();
 
 	// Turn off the Z buffer.
 	m_D3D->TurnZBufferOff();
 
-		// Render the sky dome using the sky dome shader.
-		m_SkyDome->Render(m_D3D->GetDeviceContext());
+	// Render the sky dome using the sky dome shader.
+	m_SkyDome->Render(m_D3D->GetDeviceContext());
 	m_SkyDomeShader->Render(m_D3D->GetDeviceContext(), m_SkyDome->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 		m_SkyDome->GetApexColor(), m_SkyDome->GetCenterColor(), m_SkyDome->GetTexture());
 
-		// Turn back face culling back on.
-		m_D3D->TurnOnCulling();
+	// Turn back face culling back on.
+	m_D3D->TurnOnCulling();
 
 	// Turn the Z buffer back on.
-	m_D3D->TurnZBufferOn();
+	m_D3D->TurnZBufferOn(); }
 
+	//D3DXVECTOR3 Earthpos;
+	D3DXMatrixIdentity(&WM_sun);
+	D3DXMatrixIdentity(&WM_planet);
 	// Reset the world matrix.
 	m_D3D->GetWorldMatrix(worldMatrix);
-	D3DXMatrixRotationY(&worldMatrix1, rotation);
+	m_D3D->GetWorldMatrix(WM_moon);
+	m_D3D->GetWorldMatrix(worldMatrix1);
+
+	D3DXMatrixTranspose(&WM_moon, &WM_moon);
+	D3DXMatrixTranspose(&WM_planet, &WM_planet);
+	//D3DXMatrixDecompose(&D3DXVECTOR3(), &D3DXQUATERNION(), &Earthpos, &worldMatrix1);
+
+	//D3DXMatrixIdentity
+	D3DXMatrixRotationY(&worldMatrix1, -rotation);
+	D3DXMatrixRotationX(&WM_moon, rotation*10);
+	D3DXMatrixRotationY(&WM_sun, rotation);
+	//D3DXMatrixRotationZ(&WM_planet, rotation);
+
+
 	for (int i = 0; i < num; i++) {
+
 		m_Model[i]->Render(m_D3D->GetDeviceContext());
-		// Render the model using the light shader.
+
 		if (i == 0) {
-			// Render the model using the light shader.
-			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), WM_sun, viewMatrix, projectionMatrix,
+				m_Model[i]->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		}
+		else if (i == 2) {
+			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), WM_moon*worldMatrix1, viewMatrix, projectionMatrix,
 				m_Model[i]->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 		}
 		else
-			// Render the model using the light shader.
-			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), worldMatrix1*i, viewMatrix, projectionMatrix,
+			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), worldMatrix1, viewMatrix, projectionMatrix,
 				m_Model[i]->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+
 		if (!result)
 		{
 			return false;
 		}
 	}
+
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
 

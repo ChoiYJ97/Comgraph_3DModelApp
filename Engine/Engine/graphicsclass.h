@@ -34,7 +34,7 @@ const float SCREEN_NEAR = 0.1f;
 class GraphicsClass
 {
 public:	
-	int num = 10;
+	int num = 5;
 	GraphicsClass();
 	GraphicsClass(const GraphicsClass&);
 	~GraphicsClass();
