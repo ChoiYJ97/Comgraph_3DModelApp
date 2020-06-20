@@ -34,7 +34,7 @@ const float SCREEN_NEAR = 0.1f;
 class GraphicsClass
 {
 public:	
-	int num = 5;
+	int num = 10;
 	GraphicsClass();
 	GraphicsClass(const GraphicsClass&);
 	~GraphicsClass();
@@ -49,20 +49,20 @@ public:
 	void SetSpecular(bool);
 	void MoveCameraX(float);
 	void MoveCameraZ(float);
-	void RotateCamera(float);
+	void MoveCameraY(float);
+	void RotateXCamera(float);
+	void RotateYCamera(float);
 	void LookatChange(int, int);
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
 	TextClass* m_Text;
+	ModelClass* m_skydome;
 	ModelClass* m_Model[10];
 	
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 	int vertexCount;
-
-	SkyDomeClass* m_SkyDome;
-	SkyDomeShaderClass* m_SkyDomeShader;
 
 };
 

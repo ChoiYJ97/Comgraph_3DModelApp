@@ -25,7 +25,9 @@ public:
 	void SetRotation(float, float, float);
 	void MoveZ(float direct);
 	void MoveX(float direct);
-	void Rotate(float direct);
+	void MoveY(float direct);
+	void RotateY(float direct);
+	void RotateX(float direct);
 	void LookAtChange(int x, int y);
 	D3DXVECTOR3 GetPosition();
 	D3DXVECTOR3 GetRotation();

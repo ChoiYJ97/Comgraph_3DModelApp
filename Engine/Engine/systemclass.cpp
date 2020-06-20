@@ -243,9 +243,23 @@ bool SystemClass::Frame()
 	if (m_Input->IsSkeyPressed())
 		m_Graphics->MoveCameraZ(-direct_move);
 	if (m_Input->IsAkeyPressed())
-		m_Graphics->RotateCamera(-direct_rotate);
+		m_Graphics->MoveCameraX(-direct_move);
 	if (m_Input->IsDkeyPressed())
-		m_Graphics->RotateCamera(direct_rotate);
+		m_Graphics->MoveCameraX(direct_move);
+	if (m_Input->IsLCtrlPressed())
+		m_Graphics->MoveCameraY(-direct_move);
+	if (m_Input->IsSpacePressed())
+		m_Graphics->MoveCameraY(direct_move);
+
+
+	if (m_Input->IsUpPressed())
+		m_Graphics->RotateXCamera(-direct_rotate);
+	if (m_Input->IsDownPressed())
+		m_Graphics->RotateXCamera(direct_rotate);
+	if (m_Input->IsLeftPressed())
+		m_Graphics->RotateYCamera(-direct_rotate);
+	if (m_Input->IsRightPressed())
+		m_Graphics->RotateYCamera(direct_rotate);
 
 	//m_Graphics->LookatChange(mouseX, mouseY);
 	return true;

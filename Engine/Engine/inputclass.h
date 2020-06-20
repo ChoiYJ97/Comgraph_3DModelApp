@@ -39,9 +39,20 @@ public:
 	bool Frame();
 
 	bool IsEscapePressed();
+
 	bool Is1keyPressed();
 	bool Is2keyPressed();
 	bool Is3keyPressed();
+	bool Is4keyPressed();
+	bool Is5keyPressed();
+	bool Is6keyPressed();
+	bool Is7keyPressed();
+	bool Is8keyPressed();
+	bool Is9keyPressed();
+	bool Is0keyPressed();
+
+
+
 	bool IsWkeyPressed();
 	bool IsSkeyPressed();
 	bool IsAkeyPressed();
@@ -55,6 +66,9 @@ public:
 	bool IsZPressed();
 	bool IsPgUpPressed();
 	bool IsPgDownPressed();
+
+	bool IsLCtrlPressed();
+	bool IsSpacePressed();
 
 
 	void GetMouseLocation(int&, int&);

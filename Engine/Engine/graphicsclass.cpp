@@ -8,13 +8,12 @@ GraphicsClass::GraphicsClass()
 	m_D3D = 0;
 	m_Camera = 0;
 	m_Model[num] = { 0, };
-
+	m_skydome = 0;
 	m_LightShader = 0;
 	m_Light = 0;
+
 	m_Text = 0;
 	vertexCount = 0;
-	m_SkyDome = 0;
-	m_SkyDomeShader = 0;
 }
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
@@ -82,7 +81,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
 	
-
+	m_skydome = new ModelClass;
+	if (!m_skydome)
+	{
+		return false;
+	}
+	result = m_skydome->Initialize(m_D3D->GetDevice(), "../Engine/data/sky.obj", L"../Engine/data/Background.dds");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+		return false;
+	}
 
 	// Create the model object.
 	//for (int i = 0; i < 3; i++)
@@ -157,11 +166,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the light object.
-	m_Light->SetAmbientColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetAmbientColor(20.0f, 20.0f, 20.0f, 50.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(1.0f, -1.0f, 1.0f);
+	m_Light->SetDirection(0,0,0);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetSpecularPower(32.0f);
+	m_Light->SetSpecularPower(100000.0f);
 
 
 	// Create the text object.
@@ -178,49 +187,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
 	}
-
-	// Create the sky dome object.
-	m_SkyDome = new SkyDomeClass;
-	if (!m_SkyDome)
-	{
-		return false;
-	}
-
-	// Initialize the sky dome object.
-	result = m_SkyDome->Initialize(m_D3D->GetDevice());
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the sky dome object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the sky dome shader object.
-	m_SkyDomeShader = new SkyDomeShaderClass;
-	if (!m_SkyDomeShader)
-	{
-		return false;
-	}
-
-	// Initialize the sky dome shader object.
-	result = m_SkyDomeShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the sky dome shader object.", L"Error", MB_OK);
-		return false;
-	}
-
 	return true;
 }
 void GraphicsClass::SetAmbient(bool on)
 {
-	if (on) 
+	/*if (on) 
 	{
 		m_Light->SetAmbientColor(0.5f, 0.5f, 0.5f, 0.5f);
 	}
 	else
 	{
 		m_Light->SetAmbientColor(0, 0, 0, 0);
-	}
+	}*/
 }
 void GraphicsClass::SetDiffuse(bool on) 
 {
@@ -234,12 +212,12 @@ void GraphicsClass::SetDiffuse(bool on)
 }
 void GraphicsClass::SetSpecular(bool on) 
 {
-	if (on) 
+	/*if (on) 
 	{
 		m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 		m_Light->SetSpecularPower(32.0f);
 	}
-	else
+	else*/
 	{
 		m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 		m_Light->SetSpecularPower(100000.0f);
@@ -251,9 +229,16 @@ void GraphicsClass::MoveCameraZ(float dir) {
 void GraphicsClass::MoveCameraX(float dir) {
 	m_Camera->MoveX(dir);
 }
-void GraphicsClass::RotateCamera(float dir) {
-	m_Camera->Rotate(dir);
+void GraphicsClass::MoveCameraY(float dir) {
+	m_Camera->MoveY(dir);
 }
+void GraphicsClass::RotateXCamera(float dir) {
+	m_Camera->RotateX(dir);
+}
+void GraphicsClass::RotateYCamera(float dir) {
+	m_Camera->RotateY(dir);
+}
+
 void GraphicsClass::LookatChange(int x, int y)
 {
 	m_Camera->LookAtChange(x, y);
@@ -261,23 +246,6 @@ void GraphicsClass::LookatChange(int x, int y)
 }
 void GraphicsClass::Shutdown()
 {
-	// Release the sky dome shader object.
-	if (m_SkyDomeShader)
-	{
-		m_SkyDomeShader->Shutdown();
-		delete m_SkyDomeShader;
-		m_SkyDomeShader = 0;
-	}
-
-	// Release the sky dome object.
-	if (m_SkyDome)
-	{
-		m_SkyDome->Shutdown();
-		delete m_SkyDome;
-		m_SkyDome = 0;
-	}
-
-
 	// Release the light object.
 	if (m_Light)
 	{
@@ -293,8 +261,13 @@ void GraphicsClass::Shutdown()
 		m_LightShader = 0;
 	}
 
+	if (m_skydome)
+	{
+		m_skydome->Shutdown();
+		delete m_skydome;
+		m_skydome = 0;
+	}
 	// Release the model object.
-	//for(int i = 0; i < 3; i++)
 	for (int i = 0; i < num; i++)
 		if (m_Model)
 		{
@@ -395,7 +368,7 @@ bool GraphicsClass::Render(float rotation)
 	cameraPosition = m_Camera->GetPosition();
 
 	// Translate the sky dome to be centered around the camera position.
-	{D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+	D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
 	// Turn off back face culling.
 	m_D3D->TurnOffCulling();
@@ -403,16 +376,11 @@ bool GraphicsClass::Render(float rotation)
 	// Turn off the Z buffer.
 	m_D3D->TurnZBufferOff();
 
-	// Render the sky dome using the sky dome shader.
-	m_SkyDome->Render(m_D3D->GetDeviceContext());
-	m_SkyDomeShader->Render(m_D3D->GetDeviceContext(), m_SkyDome->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		m_SkyDome->GetApexColor(), m_SkyDome->GetCenterColor(), m_SkyDome->GetTexture());
-
 	// Turn back face culling back on.
 	m_D3D->TurnOnCulling();
 
 	// Turn the Z buffer back on.
-	m_D3D->TurnZBufferOn(); }
+	m_D3D->TurnZBufferOn();
 
 	//D3DXVECTOR3 Earthpos;
 	D3DXMatrixIdentity(&WM_sun);
@@ -429,9 +397,13 @@ bool GraphicsClass::Render(float rotation)
 	//D3DXMatrixIdentity
 	D3DXMatrixRotationY(&worldMatrix1, -rotation);
 	D3DXMatrixRotationX(&WM_moon, rotation*10);
-	D3DXMatrixRotationY(&WM_sun, rotation);
+	D3DXMatrixRotationY(&WM_sun, -rotation);
 	//D3DXMatrixRotationZ(&WM_planet, rotation);
 
+	m_skydome->Render(m_D3D->GetDeviceContext());
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_skydome->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_skydome->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 
 	for (int i = 0; i < num; i++) {
 
@@ -441,6 +413,7 @@ bool GraphicsClass::Render(float rotation)
 			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), WM_sun, viewMatrix, projectionMatrix,
 				m_Model[i]->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+
 		}
 		else if (i == 2) {
 			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), WM_moon*worldMatrix1, viewMatrix, projectionMatrix,

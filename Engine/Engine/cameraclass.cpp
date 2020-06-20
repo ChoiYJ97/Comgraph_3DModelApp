@@ -37,22 +37,41 @@ void CameraClass::SetPosition(float x, float y, float z)
 	m_positionZ = z;
 	return;
 }
+// z축 이동
 void CameraClass::MoveZ(float direct)
 {
 	SetPosition(m_positionX, m_positionY, m_positionZ+direct);
 	return;
 }
+
+// z축 이동
 void CameraClass::MoveX(float direct)
 {
 	SetPosition(m_positionX + direct, m_positionY, m_positionZ);
 	return;
 }
 
-void CameraClass::Rotate(float direct) 
+// z축 이동
+void CameraClass::MoveY(float direct)
+{
+	SetPosition(m_positionX, m_positionY+ direct, m_positionZ );
+	return;
+}
+
+// Y축 회전
+void CameraClass::RotateY(float direct) 
 {
 	SetRotation(m_rotationX, m_rotationY+direct, m_rotationZ);
 	return;
 }
+
+//X축 회전
+void CameraClass::RotateX(float direct)
+{
+	SetRotation(m_rotationX + direct, m_rotationY, m_rotationZ);
+	return;
+}
+
 
 void CameraClass::SetRotation(float x, float y, float z)
 {

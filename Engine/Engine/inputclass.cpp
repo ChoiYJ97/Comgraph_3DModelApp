@@ -253,6 +253,57 @@ bool InputClass::Is3keyPressed() {
 	}
 	return false;
 }
+bool InputClass::Is4keyPressed() {
+	if (m_keyboardState[DIK_4] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+bool InputClass::Is5keyPressed() {
+	if (m_keyboardState[DIK_5] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+bool InputClass::Is6keyPressed() {
+	if (m_keyboardState[DIK_6] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::Is7keyPressed() {
+	if (m_keyboardState[DIK_7] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+bool InputClass::Is8keyPressed() {
+	if (m_keyboardState[DIK_8] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+bool InputClass::Is9keyPressed() {
+	if (m_keyboardState[DIK_9] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+bool InputClass::Is0keyPressed() {
+	if (m_keyboardState[DIK_0] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
 bool InputClass::IsWkeyPressed() {
 	if (m_keyboardState[DIK_W] & 0x80)
 	{
@@ -375,6 +426,30 @@ bool InputClass::IsPgDownPressed()
 
 	return false;
 }
+
+bool InputClass::IsLCtrlPressed()
+{
+	// Do a bitwise and on the keyboard state to check if the key is currently being pressed.
+	if (m_keyboardState[DIK_LCONTROL] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+bool InputClass::IsSpacePressed()
+{
+	// Do a bitwise and on the keyboard state to check if the key is currently being pressed.
+	if (m_keyboardState[DIK_SPACE] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 {
 	mouseX = m_mouseX;
