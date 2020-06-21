@@ -14,6 +14,8 @@ GraphicsClass::GraphicsClass()
 
 	m_Text = 0;
 	vertexCount = 0;
+	Init = true;
+	CameraMovement = false;
 }
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
@@ -77,7 +79,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize a base view matrix with the camera for 2D user interface rendering.
-	m_Camera->SetPosition(0.0f, 10.0f, -60.0f);
+	m_Camera->SetPosition(0.0f, 30.0f, -130.0f);
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
 	
@@ -107,9 +109,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		if(i == 0)
 			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Sun.obj", L"../Engine/data/Sun.jpg");
 		else if (i == 1)
-			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Mercury.obj", L"../Engine/data/Mercury.jpg");
-		else if (i == 2)
 			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Moon.obj", L"../Engine/data/Moon.dds");
+		else if (i == 2)
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Mercury.obj", L"../Engine/data/Mercury.jpg");
 		else if (i == 3)
 			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Venus.obj", L"../Engine/data/VenusSurface.jpg");
 		else if (i == 4)
@@ -124,6 +126,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Uranus.obj", L"../Engine/data/Uranus.jpg");
 		else if (i == 9)
 			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Neptune.obj", L"../Engine/data/Neptune.jpg");
+		else if (i == 10)
+			result = m_Model[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/Ring.obj", L"../Engine/data/Ring.png");
 
 		if (!result)
 		{
@@ -301,6 +305,85 @@ void GraphicsClass::Shutdown()
 
 	return;
 }
+
+
+void GraphicsClass::modelRendering(int index, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix)
+{
+	bool result;
+
+	m_Model[index]->Render(m_D3D->GetDeviceContext());
+
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[index]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_Model[index]->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+
+	if(index == 7){
+		m_Model[10]->Render(m_D3D->GetDeviceContext());
+
+		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[10]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model[10]->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+	}
+	if (!result)
+	{
+		return;
+	}
+}
+
+void GraphicsClass::CameraTranslate()
+{
+	CameraMovement = false;
+	switch (m_index) {
+	case 9:
+		m_Camera->SetPosition(0.0f, 30.0f, -130.0f);
+		break;
+	case 0:
+		m_Camera->SetPosition(0.0f, 2.0f, -10.0f);
+		break;
+	case 1:
+		m_Camera->SetPosition(6.8f, 0.9f, -3.0f);
+		break;
+	case 2:
+		m_Camera->SetPosition(11.5f, 1.4f, -5.0f);
+		break;
+	case 3:
+		m_Camera->SetPosition(20.0f, 1.7f, -6.0f);
+		break;
+	case 4:
+		m_Camera->SetPosition(30.0f, 1.7f, -6.0f);
+		break;
+	case 5:
+		m_Camera->SetPosition(51.0f, 1.5f, -8.0f);
+		break;
+	case 6:
+		m_Camera->SetPosition(70.5f, 1.6f, -8.0f);
+		break;
+	case 7:
+		m_Camera->SetPosition(110.5f, 2.0f, -8.0f);
+		break;
+	case 8:
+		m_Camera->SetPosition(140.0f, 1.6f, -6.5f);
+		break;
+	}
+}
+
+void GraphicsClass::SetModelIndex(int index)
+{
+	this->m_index = index;
+	CameraMovement = true;
+	if (index == 9) {
+		Init = true;
+		return;
+	}
+	Init = false;
+	return;
+}
+
+int GraphicsClass::GetModelIndex()
+{
+	return m_index;
+}
+
 bool GraphicsClass::Frame(int fps, int cpu, float frameTime, bool onoff_ambi, bool onoff_diff, bool onoff_spec)
 {
 	bool result;
@@ -348,9 +431,10 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, bool onoff_ambi, bo
 bool GraphicsClass::Render(float rotation)
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-	D3DXMATRIX worldMatrix1, WM_sun, WM_moon, WM_planet;
+	D3DXMATRIX worldMatrix1, worldMatrix2, WM_sun, WM_stop, WM_moon, WM_planet;
 	bool result;
 	D3DXVECTOR3 cameraPosition;
+	float speed[10] = { 2.2409, 1.6102, 1.0000, 0.8809, 0.862, 0.458, 0.4, 0.3,0.458 };
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -381,55 +465,65 @@ bool GraphicsClass::Render(float rotation)
 
 	// Turn the Z buffer back on.
 	m_D3D->TurnZBufferOn();
-
-	//D3DXVECTOR3 Earthpos;
+	
 	D3DXMatrixIdentity(&WM_sun);
 	D3DXMatrixIdentity(&WM_planet);
-	// Reset the world matrix.
+	D3DXMatrixIdentity(&WM_stop);
+
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetWorldMatrix(WM_moon);
 	m_D3D->GetWorldMatrix(worldMatrix1);
+	m_D3D->GetWorldMatrix(worldMatrix2);
 
 	D3DXMatrixTranspose(&WM_moon, &WM_moon);
 	D3DXMatrixTranspose(&WM_planet, &WM_planet);
-	//D3DXMatrixDecompose(&D3DXVECTOR3(), &D3DXQUATERNION(), &Earthpos, &worldMatrix1);
-
-	//D3DXMatrixIdentity
+	
 	D3DXMatrixRotationY(&worldMatrix1, -rotation);
+	D3DXMatrixRotationY(&worldMatrix2, -rotation);
 	D3DXMatrixRotationX(&WM_moon, rotation*10);
 	D3DXMatrixRotationY(&WM_sun, -rotation);
-	//D3DXMatrixRotationZ(&WM_planet, rotation);
-
+	D3DXMatrixTranslation(&WM_stop, 0.0f, 0, 0);
+	D3DXMatrixRotationY(&WM_sun, -rotation);
 	m_skydome->Render(m_D3D->GetDeviceContext());
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_skydome->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 		m_skydome->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 
-	for (int i = 0; i < num; i++) {
-
-		m_Model[i]->Render(m_D3D->GetDeviceContext());
-
-		if (i == 0) {
-			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), WM_sun, viewMatrix, projectionMatrix,
-				m_Model[i]->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-
-		}
-		else if (i == 2) {
-			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), WM_moon*worldMatrix1, viewMatrix, projectionMatrix,
-				m_Model[i]->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-		}
-		else
-			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model[i]->GetIndexCount(), worldMatrix1, viewMatrix, projectionMatrix,
-				m_Model[i]->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-
-		if (!result)
+	if (Init)
+	{
+		for (int i = 0; i < num; i++)
 		{
-			return false;
+			if (i >= 2)
+				D3DXMatrixRotationY(&worldMatrix1, -rotation * speed[i - 2]);
+			if (i == 0)
+			{
+				modelRendering(i, WM_sun, viewMatrix, projectionMatrix);
+			}
+			else if (i == 1)
+			{
+				modelRendering(i, WM_moon*worldMatrix2, viewMatrix, projectionMatrix);
+			}
+			else
+				modelRendering(i, worldMatrix1, viewMatrix, projectionMatrix);
+
+			if (!result)
+			{
+				return false;
+			}
 		}
 	}
+	else
+	{
+		if (m_index == 0) {
+			modelRendering(m_index, WM_sun, viewMatrix, projectionMatrix);
+		}
+		else if (m_index >= 1 && m_index <9) {
+			modelRendering(m_index+1, WM_stop, viewMatrix, projectionMatrix);
+		}
+	}
+	if (CameraMovement)
+		CameraTranslate();
+
 
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();

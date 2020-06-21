@@ -129,7 +129,7 @@ void CameraClass::Render()
 
 	// Setup where the camera is looking by default.
 	lookAt.x = 0.0f;
-	lookAt.y = 0.0f;
+	lookAt.y = -0.2f;
 	lookAt.z = 1.0f;
 
 	setLookAt(lookAt);

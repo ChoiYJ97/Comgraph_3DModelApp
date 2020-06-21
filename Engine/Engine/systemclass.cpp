@@ -225,18 +225,30 @@ bool SystemClass::Frame()
 		return false;
 	}
 
-	if (m_Input->Is1keyPressed()&&Ambi == true)
-		Ambi = false;
-	else if(m_Input->Is1keyPressed() && Ambi == false)
-		Ambi = true;
-	if (m_Input->Is2keyPressed()&&Diff==true)
-		Diff = false;
-	else if (m_Input->Is2keyPressed() && Diff == false)
-		Diff = true;
-	if (m_Input->Is3keyPressed()&&Spec==true)
-		Spec = false;
-	else if(m_Input->Is3keyPressed() && Spec == false)
-		Spec = true;
+	if (m_Input->Is1keyPressed())
+		m_Graphics->SetModelIndex(0); //태양
+	if (m_Input->Is2keyPressed())
+		m_Graphics->SetModelIndex(1); //수성
+	if (m_Input->Is3keyPressed())
+		m_Graphics->SetModelIndex(2); //금성
+
+	if (m_Input->Is4keyPressed())
+		m_Graphics->SetModelIndex(3); //지구
+	if (m_Input->Is5keyPressed())
+		m_Graphics->SetModelIndex(4); //화성
+	if (m_Input->Is6keyPressed())
+		m_Graphics->SetModelIndex(5); //목성
+
+	if (m_Input->Is7keyPressed())
+		m_Graphics->SetModelIndex(6); //토성
+	if (m_Input->Is8keyPressed())
+		m_Graphics->SetModelIndex(7); //천왕성
+	if (m_Input->Is9keyPressed())
+		m_Graphics->SetModelIndex(8); //해왕성
+
+	if (m_Input->Is0keyPressed())
+		m_Graphics->SetModelIndex(9); //전체
+
 
 	if (m_Input->IsWkeyPressed())
 		m_Graphics->MoveCameraZ(direct_move);

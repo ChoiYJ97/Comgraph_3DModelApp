@@ -34,7 +34,6 @@ const float SCREEN_NEAR = 0.1f;
 class GraphicsClass
 {
 public:	
-	int num = 10;
 	GraphicsClass();
 	GraphicsClass(const GraphicsClass&);
 	~GraphicsClass();
@@ -53,17 +52,26 @@ public:
 	void RotateXCamera(float);
 	void RotateYCamera(float);
 	void LookatChange(int, int);
+	void modelRendering(int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX);
+	void CameraTranslate();
+
+	void SetModelIndex(int);
+	int GetModelIndex();
+
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
 	TextClass* m_Text;
 	ModelClass* m_skydome;
-	ModelClass* m_Model[10];
+	ModelClass* m_Model[11];
 	
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 	int vertexCount;
 
+	int num = 11, m_index = 9;
+	bool Init, CameraMovement;
+	
 };
 
 #endif
